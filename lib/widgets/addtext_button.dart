@@ -18,14 +18,14 @@ class _AddTextState extends State<AddText> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      tooltip: 'Add Text',
+      tooltip: 'Change Text',
       child: const Icon(Icons.add),
       onPressed: () {
         showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: const Text("Add Text"),
+              title: const Text("Change Text"),
               content: TextField(
                 controller: _textcontroller,
                 // keyboardType: TextInputType.text,
