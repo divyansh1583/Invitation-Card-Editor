@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:celebrate_app/model/text_model.dart';
-import 'package:celebrate_app/screens/info_screen.dart';
 import 'package:celebrate_app/widgets/addtext_button.dart';
 import 'package:celebrate_app/widgets/tool_bar.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:celebrate_app/widgets/image_saver.dart';
 import 'dart:ui' as ui;
+import 'package:image_picker/image_picker.dart';
 
 class EditingScreen extends StatefulWidget {
   const EditingScreen({super.key});
@@ -16,6 +18,7 @@ class EditingScreen extends StatefulWidget {
 }
 
 class _EditingScreenState extends State<EditingScreen> {
+  String? _currentImage;
   final TextInfo _currentText = TextInfo(
     text: 'Empty',
     left: 0,
@@ -110,6 +113,17 @@ class _EditingScreenState extends State<EditingScreen> {
     }
   }
 
+  Future<void> _pickImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _currentImage = pickedFile.path;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,14 +138,10 @@ class _EditingScreenState extends State<EditingScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.info),
+            // Add this IconButton for picking an image from the gallery
+            icon: const Icon(Icons.photo),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const InfoScreen(),
-                ),
-              );
+              _pickImageFromGallery();
             },
           ),
         ],
@@ -145,9 +155,15 @@ class _EditingScreenState extends State<EditingScreen> {
                 width: 350,
                 height: 500,
                 decoration: BoxDecoration(
-                  image: const DecorationImage(
-                      image: AssetImage('lib/assets/white_template.jpg'),
-                      fit: BoxFit.cover),
+                  image: _currentImage != null
+                      ? DecorationImage(
+                          image: FileImage(File(_currentImage!)),
+                          fit: BoxFit.cover,
+                        )
+                      : const DecorationImage(
+                          image: AssetImage('lib/assets/white_template.jpg'),
+                          fit: BoxFit.cover,
+                        ),
                   color: Theme.of(context).colorScheme.background,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
